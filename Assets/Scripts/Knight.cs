@@ -14,8 +14,7 @@ public class Knight : CharacterData
     [SerializeField] RuntimeAnimatorController controller;
     public override RuntimeAnimatorController MyController { get => controller; }
 
-    [SerializeField] Sword sword;
-
+    [SerializeField] HitBox sword;
     public override void Start()
     {
         print("start knitg");

@@ -144,7 +144,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         character.EndSpecialAttack();
     }
 
-    public void Hit(int amount)
+    public void OnHit(int amount)
     {
         MyCurrentHealth -= amount;
         animator.SetTrigger("Damaged");

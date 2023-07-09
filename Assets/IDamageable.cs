@@ -6,9 +6,7 @@ public interface IDamageable
 {
     public int MyMaxHealth { get;}
     public int MyCurrentHealth { get; set; }
-    public virtual void Hit(int amount)
-    {
-    }
+    public abstract void OnHit(int amount);
     public void Death();
 
 }

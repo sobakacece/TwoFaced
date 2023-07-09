@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Dragon : CharacterData
 {
-
-
     [SerializeField] float dashTime;
     public override float MyDashTime { get => dashTime; set => dashTime = value; }
     [SerializeField] float speed;
@@ -23,8 +21,9 @@ public class Dragon : CharacterData
     public override void SpecialAttack()
     {
         print("DragonFire");
-        Instantiate(projectile, placeToSpawn.position, placeToSpawn.rotation);
-
+        projectile.direction = transform.TransformDirection(Vector3.right);
+        Instantiate(projectile, placeToSpawn.position, projectile.transform.rotation);
+        
         // projectile.transform.parent = scene;
     }
     public override void EndSpecialAttack()
