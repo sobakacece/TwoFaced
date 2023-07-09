@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
+
     [Header("Walking")]
     public float walkingSpeed = 1f;
     public float collisionOffset = 0.05f;
@@ -18,12 +19,23 @@ public class PlayerController : MonoBehaviour
     Vector2 movementInput; //DIRECTION INPUT 
     SpriteRenderer spriteRenderer;
     Animator animator;
+    Sword sword;
+
+    [Header("Combat")]
+    [SerializeField] private int maxHealth;
+    private int currHealth;
+    public int MyMaxHealth => maxHealth;
+
+    public int MyCurrentHealth { get => currHealth; set => currHealth = value; }
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        sword = GetComponentInChildren<Sword>();
+        MyCurrentHealth = maxHealth;
     }
 
     // Update is called once per frame
@@ -73,6 +85,7 @@ public class PlayerController : MonoBehaviour
     {
         print("Fire");
         animator.SetTrigger("Attack");
+        sword.StartAttack();
     }
     void OnDash()
     {
@@ -102,7 +115,25 @@ public class PlayerController : MonoBehaviour
     public void ResumeMovement()
     {
         IsMoveable = true;
-        print("resumed");
+    }
+    public void EndAttack()
+    {
+        ResumeMovement();
+        sword.StopAttack();
     }
 
+    public void Hit(int amount)
+    {
+        MyCurrentHealth -= amount;
+        animator.SetTrigger("Damaged");
+        if (MyCurrentHealth <= 0)
+        {
+            Death();
+        }
+    }
+
+    public void Death()
+    {
+        Destroy(gameObject);
+    }
 }
