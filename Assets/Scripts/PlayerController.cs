@@ -5,7 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour, IDamageable
 {
-
+    [Header("Character")]
+    public CharacterData character;
     [Header("Walking")]
     public float walkingSpeed = 1f;
     public float collisionOffset = 0.05f;
@@ -14,28 +15,42 @@ public class PlayerController : MonoBehaviour, IDamageable
     public float dashTime = 1f;
     public float dashSpeed = 10f;
     public ContactFilter2D movementFilter; //WHERE YOU WILL COLLIDE
+
+    [Header("QTER")]
+    [SerializeField] QTEEvent qEvent;
+    [SerializeField] QTEManager qManager;
     List<RaycastHit2D> castCollisions = new List<RaycastHit2D>(); //LIST OF FOUND COLLISIONS AT THE END OF 
-    Rigidbody2D rb;
-    Vector2 movementInput; //DIRECTION INPUT 
-    SpriteRenderer spriteRenderer;
-    Animator animator;
-    Sword sword;
+    protected Rigidbody2D rb;
+    protected Vector2 movementInput; //DIRECTION INPUT 
+    protected SpriteRenderer spriteRenderer;
+    protected Animator animator;
+
+
 
     [Header("Combat")]
     [SerializeField] private int maxHealth;
-    private int currHealth;
+    protected static int currHealth;
     public int MyMaxHealth => maxHealth;
 
     public int MyCurrentHealth { get => currHealth; set => currHealth = value; }
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
-        sword = GetComponentInChildren<Sword>();
         MyCurrentHealth = maxHealth;
+
+        ApplyCharData();
+
+    }
+    public void ApplyCharData()
+    {
+        animator.runtimeAnimatorController = character.MyController;
+        dashSpeed = character.MyDashSpeed;
+        walkingSpeed = character.MySpeed;
+        dashTime = character.MyDashTime;
     }
 
     // Update is called once per frame
@@ -70,6 +85,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         movementInput = movementValue.Get<Vector2>();
     }
+
     void UpdateFaceDirection()
     {
         if (movementInput.x > 0)
@@ -81,16 +97,22 @@ public class PlayerController : MonoBehaviour, IDamageable
             transform.localScale = new Vector3(-1, 1, 1);
         }
     }
-    void OnFire()
+    protected virtual void OnFire()
     {
-        print("Fire");
         animator.SetTrigger("Attack");
-        sword.StartAttack();
+        // sword.StartAttack();
+        character.SpecialAttack();
     }
     void OnDash()
     {
         // print("Dash " + movementInput.ToString());
         StartCoroutine(Dash(dashTime, movementInput));
+    }
+    void OnQTE()
+    {
+        print("QTE STARTED");
+        animator.SetTrigger("Transformed");
+        qManager.startEvent(qEvent);
     }
     IEnumerator Dash(float dashTime, Vector2 dashDirection)
     {
@@ -119,7 +141,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void EndAttack()
     {
         ResumeMovement();
-        sword.StopAttack();
+        character.EndSpecialAttack();
     }
 
     public void Hit(int amount)
@@ -136,4 +158,13 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         Destroy(gameObject);
     }
+    // public void DisableInput()
+    // {
+    //     GetComponent<PlayerInput>().enabled = false;
+    // }
+    // public void EnableInput()
+    // {
+    //     GetComponent<PlayerInput>().enabled = false;
+
+    // }
 }

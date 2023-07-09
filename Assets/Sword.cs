@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class Sword : MonoBehaviour
+public class Sword : MonoBehaviour, IHit
 {
     [SerializeField] private int damage;
-    public int MyDamage { get => damage; set => damage = value; }
+    public int MyDamage { get => damage; }
     BoxCollider2D hitBox;
     void Start()
     {
