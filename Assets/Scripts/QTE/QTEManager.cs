@@ -4,7 +4,6 @@ using UnityEngine;
 
 #if UNITY_2019_4_OR_NEWER && ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
-using DualShockGamepadPS4 = UnityEngine.InputSystem.DualShock.DualShock4GamepadHID;
 #endif
 
 
@@ -235,10 +234,7 @@ public class QTEManager : MonoBehaviour
         return Gamepad.current != null;
     }
 
-    public bool isXBOXGamePad()
-    {
-        return DualShockGamepadPS4.current == null;
-    }
+
 
     public void checkKeyboardInput(QTEKey key)
     {
@@ -301,21 +297,7 @@ public class QTEManager : MonoBehaviour
     protected QTEUI getUI()
     {
         var ui = eventData.keyboardUI;
-        if (isGamePadConnected())
-        {
-#if ENABLE_INPUT_SYSTEM
-            if (isXBOXGamePad())
-            {
-                ui = eventData.gamepadXBOXUI;
-            }
-            else
-            {
-                ui = eventData.gamepadDualShockUI;
-            }
-#else
-            ui = eventData.gamepadUI;
-#endif
-        }
+      
         return ui;
     }
 }
